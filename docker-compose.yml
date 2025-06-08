@@ -1,0 +1,246 @@
+version: "3.9"
+
+services:
+
+    ms-auth:
+        container_name: mySQL-auth
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: root_pass
+            MYSQL_DATABASE: auth_db
+            MYSQL_USER: auth_user
+            MYSQL_PASSWORD: auth_pass
+        ports:
+            - "3306:3306"
+        networks:
+            - auth
+        volumes:
+            - ms_auth_data:/var/lib/mysql 
+
+    pg-course:
+        container_name: pg-course
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: course_user
+            POSTGRES_PASSWORD: course_pass
+            POSTGRES_DB: course_db
+        ports:
+            - "5432:5432"
+        networks:
+            - course
+        volumes:
+            - pg_course_data:/var/lib/postgresql/data
+
+    pg-progress:
+        container_name: pg-progress
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: progress_user
+            POSTGRES_PASSWORD: progress_pass
+            POSTGRES_DB: progress_db
+        ports:
+            - "5433:5432"
+        networks:
+            - progress
+
+    pg-quiz:
+        container_name: pg-quiz
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: quiz_user
+            POSTGRES_PASSWORD: quiz_pass
+            POSTGRES_DB: quiz_db
+        ports:
+            - "5434:5432"
+        networks:
+            - quiz
+    pg-user:
+        container_name: pg-user
+        image: postgres:latest
+        environment:
+            POSTGRES_USER: user_user
+            POSTGRES_PASSWORD: user_pass
+            POSTGRES_DB: user_db
+        ports:
+            - "5435:5432"
+        networks:
+            - user
+
+    nginx:
+        container_name: nginx
+        image: nginx:latest
+        ports:
+            - "80:80"
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        networks:
+            - backend
+        profiles:
+            - nginx
+
+
+    api-gateway:
+        container_name: api-gateway
+        build:
+            context: /services/APIGateway
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"
+        networks:
+            - backend
+
+    auth-service:
+        container_name: auth-service
+        build:
+            context: /services/auth-service
+            dockerfile: Dockerfile
+        ports:
+            - "8081:8080"
+        networks:
+            - backend
+    
+    course-service:
+        container_name: course-service
+        build:
+            context: /services/course-service
+            dockerfile: Dockerfile
+        ports:
+            - "8082:8080"
+        networks:
+            - backend
+
+    media-service:
+        container_name: media-service
+        build:
+            context: /services/media-service
+            dockerfile: Dockerfile
+        ports:
+            - "8083:8080"
+        networks:
+            - backend
+
+    notification-service:
+        container_name: notification-service
+        build:
+            context: /services/notification-service
+            dockerfile: Dockerfile
+        ports:
+            - "8084:8080"
+        networks:
+            - backend
+
+    progress-service:
+        container_name: progress-service
+        build:
+            context: /services/progress-service
+            dockerfile: Dockerfile
+        ports:
+            - "8085:8080"
+        networks:
+            - backend
+
+    quiz-service:
+        container_name: quiz-service
+        build:
+            context: /services/quiz-service
+            dockerfile: Dockerfile
+        ports:
+            - "8086:8080"
+        networks:
+            - backend
+
+    user-service:
+        container_name: user-service
+        build:
+            context: /services/user-service
+            dockerfile: Dockerfile
+        ports:
+            - "8087:8080"
+        networks:
+            - backend
+
+    # Optional service
+
+    discussion-service:
+        container_name: discussion-service
+        build:
+            context: /services/discussion-service
+            dockerfile: Dockerfile
+        ports:
+            - "8088:8080"
+        networks:
+            - backend
+        profiles:
+            - discussion
+        
+    analytics-service:
+        container_name: analytics-service
+        build:
+            context: /services/analytics-service
+            dockerfile: Dockerfile
+        ports:
+            - "8089:8080"
+        networks:
+            - backend
+        profiles:
+            - analytics
+
+    billing-service:
+        container_name: billing-service
+        build:
+            context: /services/billing-service
+            dockerfile: Dockerfile
+        ports:
+            - "8090:8080"
+        networks:
+            - backend
+        profiles:
+            - billing
+    
+
+    recommender-service:
+        container_name: recommender-service
+        build:
+            context: /services/recommender-service
+            dockerfile: Dockerfile
+        ports:
+            - "8091:8080"
+        networks:
+            - backend
+        profiles:
+            - recommender
+
+    admin-service:
+        container_name: admin-service
+        build:
+            context: /services/admin-service
+            dockerfile: Dockerfile
+        ports:
+            - "8092:8080"
+        networks:
+            - backend
+        profiles:
+            - admin
+
+networks:
+    backend:
+        driver: bridge
+    auth:
+        driver: bridge
+    course:
+        driver: bridge
+    notification:
+        driver: bridge
+    progress:
+        driver: bridge
+    quiz:
+        driver: bridge
+    user:
+        driver: bridge
+
+volumes:
+    pg_course_data:
+        driver: local
+    ms_auth_data:
+        driver: local
+    
